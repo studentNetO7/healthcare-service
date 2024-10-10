@@ -129,6 +129,7 @@ class MedicalServiceImplTest {
         expectedMessage = String.format("Warning, patient with id: %s, need help", patientId);
         healthInfo = new HealthInfo(currentTemp, currentBP);
         patientInfo = new PatientInfo(patientId, "Mark", "Twain", LocalDate.of(2007, 12, 23), healthInfo);
+        Mockito.when(patientInfoRepository.getById(patientId)).thenReturn(patientInfo);
     }
 
     public static Stream<Arguments> dataProvider() {
@@ -140,7 +141,6 @@ class MedicalServiceImplTest {
     @ParameterizedTest
     @MethodSource("dataProvider")
     void checkBloodPressure_was_message_sent(BloodPressure newBP, BigDecimal newTemp, boolean shouldAlert) {
-        Mockito.when(patientInfoRepository.getById(patientId)).thenReturn(patientInfo);
         medicalService.checkBloodPressure(patientId, newBP);
         if (shouldAlert) {
             Mockito.verify(alertService, Mockito.atLeastOnce()).send(expectedMessage);
@@ -152,7 +152,6 @@ class MedicalServiceImplTest {
     @ParameterizedTest
     @MethodSource("dataProvider")
     void checkBloodPressure_message_content(BloodPressure newBP, BigDecimal newTemp, boolean shouldAlert) {
-        Mockito.when(patientInfoRepository.getById(patientId)).thenReturn(patientInfo);
         ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
         medicalService.checkBloodPressure(patientId, newBP);
         if (shouldAlert) {
@@ -164,7 +163,6 @@ class MedicalServiceImplTest {
     @ParameterizedTest
     @MethodSource("dataProvider")
     void checkTemperature_was_message_sent(BloodPressure newBP, BigDecimal newTemp, boolean shouldAlert) {
-        Mockito.when(patientInfoRepository.getById(patientId)).thenReturn(patientInfo);
         medicalService.checkTemperature(patientId, newTemp);
         if (shouldAlert) {
             Mockito.verify(alertService, Mockito.atLeastOnce()).send(expectedMessage);
@@ -176,7 +174,6 @@ class MedicalServiceImplTest {
     @ParameterizedTest
     @MethodSource("dataProvider")
     void checkTemperature_message_content(BloodPressure newBP, BigDecimal newTemp, boolean shouldAlert) {
-        Mockito.when(patientInfoRepository.getById(patientId)).thenReturn(patientInfo);
         ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
         medicalService.checkTemperature(patientId, newTemp);
         if (shouldAlert) {
