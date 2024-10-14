@@ -124,11 +124,23 @@ class MedicalServiceImplTest {
         alertService = Mockito.mock(SendAlertService.class);
         medicalService = new MedicalServiceImpl(patientInfoRepository, alertService);
         patientId = "123";
-        currentBP = (new BloodPressure(120, 80));
-        currentTemp =  BigDecimal.valueOf(36.5);
         expectedMessage = String.format("Warning, patient with id: %s, need help", patientId);
-        healthInfo = new HealthInfo(currentTemp, currentBP);
-        patientInfo = new PatientInfo(patientId, "Mark", "Twain", LocalDate.of(2007, 12, 23), healthInfo);
+
+        // Создаем мок HealthInfo
+        healthInfo = Mockito.mock(HealthInfo.class);
+
+        // Настраиваем поведение для getBloodPressure и getNormalTemperature
+        currentBP = new BloodPressure(120, 80);
+        currentTemp = BigDecimal.valueOf(36.5);
+        Mockito.when(healthInfo.getBloodPressure()).thenReturn(currentBP);
+        Mockito.when(healthInfo.getNormalTemperature()).thenReturn(currentTemp);
+
+        // Создаем мок PatientInfo
+        patientInfo = Mockito.mock(PatientInfo.class);
+        Mockito.when(patientInfo.getId()).thenReturn(patientId);
+        Mockito.when(patientInfo.getHealthInfo()).thenReturn(healthInfo);
+
+        // Настраиваем поведение для patientInfoRepository
         Mockito.when(patientInfoRepository.getById(patientId)).thenReturn(patientInfo);
     }
 
